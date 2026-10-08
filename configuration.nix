@@ -3,11 +3,22 @@
   pkgs,
   inputs,
   ...
-}: {
+}:
+let
+  dwm-custom = pkgs.dwm.override {
+    conf = ./dwm/config.h;
+    patches = [ ./dwm/gaps.patch ];
+  };
+in {
   imports = [
     ./hardware-configuration.nix
     ./modules/networking.nix
   ];
+
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -23,6 +34,12 @@ virtualisation.docker.enable = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   time.timeZone = "America/Sao_Paulo";
+
+  location = {
+    provider = "manual";
+    latitude = -23.55;
+    longitude = -46.63;
+  };
 
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -42,9 +59,36 @@ virtualisation.docker.enable = true;
   services.xserver.displayManager.lightdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
+  services.xserver.windowManager.dwm = {
+    enable = true;
+    package = dwm-custom;
+    extraSessionCommands = ''
+      ${pkgs.feh}/bin/feh --bg-fill /home/dio/Wallpapers/694117.png &
+      ${pkgs.picom}/bin/picom --backend xrender --daemon >/dev/null 2>&1 || true
+      ${pkgs.redshift}/bin/redshift -O 4500 -m randr >/dev/null 2>&1 || true
+      while true; do
+        ${pkgs.xorg.xsetroot}/bin/xsetroot -name "$(${pkgs.coreutils}/bin/date '+%a %d/%m %H:%M')"
+        ${pkgs.coreutils}/bin/sleep 30
+      done &
+    '';
+  };
+
   services.xserver.xkb = {
     layout = "br";
     variant = "abnt2";
+  };
+
+  services.picom = {
+    enable = true;
+    backend = "xrender";
+  };
+
+  services.redshift = {
+    enable = false;
+    temperature = {
+      day = 6500;
+      night = 4500;
+    };
   };
 
   services.xserver.displayManager.sessionCommands = ''
@@ -52,7 +96,7 @@ virtualisation.docker.enable = true;
     ${pkgs.xorg.xset}/bin/xset s off
     ${pkgs.xorg.xset}/bin/xset s noblank
     for output in $(${pkgs.xorg.xrandr}/bin/xrandr | ${pkgs.gawk}/bin/awk '/ connected/{print $1}'); do
-      ${pkgs.xorg.xrandr}/bin/xrandr --output "$output" --rate 240 >/dev/null 2>&1 || true
+      ${pkgs.xorg.xrandr}/bin/xrandr --output "$output" --rate 120 >/dev/null 2>&1 || true
     done
   '';
 
@@ -100,6 +144,10 @@ virtualisation.docker.enable = true;
   environment.systemPackages = with pkgs; [
     vim
     neovim
+    dwm-custom
+    dmenu
+    redshift
+    feh
     ghostty
     steam
     yt-dlp

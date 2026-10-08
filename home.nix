@@ -458,6 +458,18 @@ in {
     };
   };
 
+  programs.alacritty = {
+    enable = true;
+    settings = {
+      font.normal.family = "JetBrainsMono Nerd Font";
+      window.opacity = 0.9;
+      window.padding = {
+        x = 12;
+        y = 10;
+      };
+    };
+  };
+
   programs.git = {
     enable = true;
     userName = "diorisso";

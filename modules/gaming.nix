@@ -4,5 +4,6 @@
     ppsspp
     pcsx2
     libretro.swanstation
+    prismlauncher
   ];
 }
