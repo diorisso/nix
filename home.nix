@@ -70,6 +70,7 @@ in {
 	  ./modules/devops.nix
 	  ./modules/misc.nix
 	  ./modules/gaming.nix
+	  ./modules/cybersec.nix
 	];
 
   home.username = "dio";
