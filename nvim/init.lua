@@ -23,6 +23,8 @@ vim.keymap.set('n', '<leader>g', vim.diagnostic.open_float)
 vim.keymap.set('n', '<C-.>', vim.lsp.buf.code_action)
 vim.keymap.set('n', '<leader>sf', ":Pick files<CR>")
 vim.keymap.set('n', '<leader>w', "::Pick files<CR>")
+vim.keymap.set('n', '<leader>o', "<cmd>Oil<CR>", { desc = "Abrir Oil" })
+vim.keymap.set('n', '-', "<cmd>Oil<CR>", { desc = "Abrir Oil" })
 vim.keymap.set('i', '<C-Space>', '<C-x><C-o>', { noremap = true, silent = true })
 
 vim.opt.list = true
@@ -42,11 +44,13 @@ vim.pack.add({
   "https://github.com/hrsh7th/cmp-nvim-lsp",
   "https://github.com/hrsh7th/cmp-omni",
   "https://github.com/nvim-mini/mini.pick",
-  "https://github.com/nvim-mini/mini.pairs"
+  "https://github.com/nvim-mini/mini.pairs",
+  "https://github.com/stevearc/oil.nvim"
 })
 
 require("mini.pairs").setup()
 require("mini.pick").setup()
+require("oil").setup()
 require("vague").setup({
   transparent = true,
 })
@@ -64,7 +68,7 @@ cmp.setup({
   }),
 })
 
-vim.lsp.enable({ "lua_ls", "csharp_ls" })
+vim.lsp.enable({ "lua_ls", "csharp_ls", "gopls" })
 
 vim.cmd(":hi statusline guibg=NONE")
 vim.cmd("colorscheme vague")
