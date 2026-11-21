@@ -40,10 +40,7 @@
     }
   '';
   stremioApp = pkgs.stremio-linux-shell.overrideAttrs (final: prev: {
-    postPatch = ''
-      substituteInPlace src/config.rs \
-        --replace-fail "@serverjs@" "$out/share/stremio/server.js"
-
+    postPatch = prev.postPatch + ''
       for file in $cargoDepsCopy/libappindicator-sys-*/src/lib.rs; do
         [ -e "$file" ] || continue
         substituteInPlace "$file" \
@@ -71,6 +68,7 @@ in {
 	  ./modules/misc.nix
 	  ./modules/gaming.nix
 	  ./modules/cybersec.nix
+	  ./modules/audio.nix
 	];
 
   home.username = "dio";
@@ -102,8 +100,6 @@ in {
   home.stateVersion = "25.11";
 
   services.ssh-agent.enable = true;
-
-  nixpkgs.config.allowUnfree = true;
 
   home.packages = with pkgs; [
     gcc
@@ -473,8 +469,10 @@ in {
 
   programs.git = {
     enable = true;
-    userName = "diorisso";
-    userEmail = "diogenesmarquesr@gmail.com";
+    settings.user = {
+      name = "diorisso";
+      email = "diogenesmarquesr@gmail.com";
+    };
   };
 
   programs.waybar = {
@@ -647,7 +645,6 @@ in {
       ];
       input = {
         kb_layout = "br";
-        kb_variant = "abnt2";
       };
       general = {
         gaps_in = 6;

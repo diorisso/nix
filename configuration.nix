@@ -63,6 +63,15 @@ virtualisation.docker.enable = true;
     enable = true;
     package = dwm-custom;
     extraSessionCommands = ''
+      # Mantém o layout br/abnt2: reaplica se algo (hotplug, gnome) resetar para us
+      (
+        while true; do
+          if ! ${pkgs.xorg.setxkbmap}/bin/setxkbmap -query | ${pkgs.gnugrep}/bin/grep -q '^layout: *br$'; then
+            ${pkgs.xorg.setxkbmap}/bin/setxkbmap -model abnt2 -layout br -option terminate:ctrl_alt_bksp
+          fi
+          ${pkgs.coreutils}/bin/sleep 2
+        done
+      ) &
       ${pkgs.feh}/bin/feh --bg-fill /home/dio/Wallpapers/694117.png &
       ${pkgs.picom}/bin/picom --backend xrender --daemon >/dev/null 2>&1 || true
       ${pkgs.redshift}/bin/redshift -O 4500 -m randr >/dev/null 2>&1 || true
@@ -75,7 +84,7 @@ virtualisation.docker.enable = true;
 
   services.xserver.xkb = {
     layout = "br";
-    variant = "abnt2";
+    model = "abnt2";
   };
 
   services.picom = {
@@ -152,6 +161,18 @@ virtualisation.docker.enable = true;
     steam
     yt-dlp
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+    (pkgs.bitwig-studio.overrideAttrs (old: {
+      # bitwig.jar patchado é da build 6.1 (rev 94a9041); precisa casar com o binário nativo
+      version = "6.1";
+      src = pkgs.fetchurl {
+        name = "bitwig-studio-6.1.deb";
+        url = "https://www.bitwig.com/dl/Bitwig%20Studio/6.1/installer_linux/";
+        hash = "sha256-dJbwn8JNHuSZ/lKQV4zoSbbthDdHl4J7hhmOZ5AdA2M=";
+      };
+      postInstall = (old.postInstall or "") + ''
+        cp ${./bitwig.jar} $out/libexec/bin/bitwig.jar
+      '';
+    }))
   ];
 
   system.stateVersion = "25.11";

@@ -9,5 +9,7 @@
     fuse
     libusb1
     (texlive.combine { inherit (texlive) scheme-basic titlesec; })
+    dysk
+    zapfast
   ];
 }
